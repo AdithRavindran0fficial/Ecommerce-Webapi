@@ -1,7 +1,10 @@
 
 using Ecommerce_Webapi.Data;
 using Ecommerce_Webapi.Mapping;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Ecommerce_Webapi
 {
@@ -18,6 +21,26 @@ namespace Ecommerce_Webapi
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
             });
+            builder.Services.AddAuthentication(option =>
+            {
+                option.DefaultAuthenticateScheme= JwtBearerDefaults.AuthenticationScheme;
+                option.DefaultChallengeScheme= JwtBearerDefaults.AuthenticationScheme;
+                option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(op =>
+            {
+                op.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey=true
+
+                };
+            })
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -34,6 +57,7 @@ namespace Ecommerce_Webapi
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
 
             app.MapControllers();

@@ -1,4 +1,5 @@
 ﻿using Ecommerce_Webapi.Controllers.Models.User;
+using Ecommerce_Webapi.Models.UserModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce_Webapi.Data
@@ -10,6 +11,6 @@ namespace Ecommerce_Webapi.Data
         {
 
         }
-        public 
+        public DbSet<Users> Users { get; set; }
     }
 }
