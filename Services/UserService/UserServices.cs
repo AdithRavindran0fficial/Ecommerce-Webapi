@@ -6,28 +6,32 @@ using Ecommerce_Webapi.DTOs;
 using Ecommerce_Webapi.Models.UserModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace Ecommerce_Webapi.Services.UserService
 {
-    public class UserServices
+    public class UserServices :IUserService
     {
-        private AppDbCotext _context;
+        private AppDbContext _context;
         private IMapper _mapper;
         private IConfiguration _configuration;
-        public UserServices(AppDbCotext context,IMapper mapper,IConfiguration configuration) 
+        
+        public UserServices(AppDbContext context,IMapper mapper,IConfiguration configuration) 
         {
             _context = context;
             _mapper = mapper;
             _configuration = configuration;
+            
         }
         public async Task<IEnumerable<UserDTO>> GetAll()
         {
             try
             {
+
                 var users = await _context.Users.ToListAsync();
                 var userdto = _mapper.Map<IEnumerable<UserDTO>>(users);
                 return userdto;
@@ -40,9 +44,22 @@ namespace Ecommerce_Webapi.Services.UserService
         }
         public async Task<UserDTO> GetById(int id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(us => us.Id==id);
-            var userdto = _mapper.Map<UserDTO>(user);
-            return userdto;
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(us => us.Id == id);
+                if (user == null)
+                {
+                    return null;
+                }
+                var userdto = _mapper.Map<UserDTO>(user);
+                return userdto;
+
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
        public async Task<bool> Register_User(UserDTO userDTO)
         {
@@ -84,24 +101,25 @@ namespace Ecommerce_Webapi.Services.UserService
                         {
                             return "User Blocked";
                         }
-                        var tokenHandler = new JwtSecurityTokenHandler();
-                        var key = _configuration["Jwt:Key"];
-                        var tokenDescriptor = new SecurityTokenDescriptor
-                        {
-                            Subject = new ClaimsIdentity(new Claim[]
-                            {
-                            new Claim(ClaimTypes.NameIdentifier,exist.Id.ToString()),
-                            new Claim(ClaimTypes.Name,exist.UserName),
-                            new Claim(ClaimTypes.Role,exist.Role),
-                            }),
-                            Expires = DateTime.UtcNow.AddMinutes(30),
-                            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), SecurityAlgorithms.HmacSha256Signature)
-                        };
-                        var token = tokenHandler.CreateToken(tokenDescriptor);
-                        var tokenString = tokenHandler.WriteToken(token);
-                        return tokenString;
 
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                        var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+                        var claim = new[]
+             {
+                //new Claim(JwtRegisteredClaimNames.Sub,user.Name),
+                //new Claim(JwtRegisteredClaimNames.Jti,user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier,exist.Id.ToString()),
+                new Claim(ClaimTypes.Role,exist.Role)
+            };
+                        var token = new JwtSecurityToken(
+                claims: claim,
+                signingCredentials: credential,
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+
+                expires: DateTime.Now.AddDays(1));
+                        return new JwtSecurityTokenHandler().WriteToken(token);
                     }
 
                 }
@@ -113,6 +131,44 @@ namespace Ecommerce_Webapi.Services.UserService
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<bool> Block_User(int id)
+        {
+            try
+            {
+                var exist = await _context.Users.FirstOrDefaultAsync(us => us.Id == id);
+                if (exist == null)
+                {
+                    return false;
+                }
+                exist.IsStatus = false;
+                await _context.SaveChangesAsync();
+                return true;
+               
 
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
+        }
+        public async Task<bool> Unblock_User(int id)
+        {
+            try
+            {
+                var exist = await _context.Users.FirstOrDefaultAsync(us => us.Id == id);
+                if (exist == null)
+                {
+                    return false;
+                }
+                exist.IsStatus = true;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
