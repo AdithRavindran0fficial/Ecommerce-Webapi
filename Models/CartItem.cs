@@ -14,7 +14,7 @@ namespace Ecommerce_Webapi.Models
         [Required]
         public int Quantity { get; set; }
         public virtual Cart Cart { get; set; }
-        public virtual Users Users { get; set; }
+        public virtual Products Products { get; set; }
 
     }
 }

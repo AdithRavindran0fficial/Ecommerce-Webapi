@@ -17,5 +17,8 @@ namespace Ecommerce_Webapi.Models
         [Required]
         public int CategoryId { get; set; }
         public virtual Category Category { get; set; }
+        public ICollection<CartItem> CartItems { get; set; }
+        public ICollection<OrderItems> OrderItems { get; set; }
+        public ICollection<WhishList> WhishList { get; set; }
     }
 }

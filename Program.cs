@@ -1,6 +1,7 @@
 
 using Ecommerce_Webapi.Data;
 using Ecommerce_Webapi.Mapping;
+using Ecommerce_Webapi.Services.ProductService;
 using Ecommerce_Webapi.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace Ecommerce_Webapi
             builder.Services.AddLogging();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
             builder.Services.AddScoped<IUserService,UserServices>();
+            builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddDbContext<AppDbContext>(option =>
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));

@@ -11,5 +11,6 @@ namespace Ecommerce_Webapi.Models
        public int UserId { get; set; }
        public virtual Users Users { get; set; }
         public ICollection<CartItem> CartItems { get; set; }
+
     }
 }
