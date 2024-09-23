@@ -37,50 +37,17 @@ namespace Ecommerce_Webapi
                 op.IncludeErrorDetails = true;
                 op.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    //ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    //ValidAudience = builder.Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true
 
 
 
                 };
-                op.Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        Console.WriteLine("Token validated");
-                        return Task.CompletedTask;
-                    },
-                    OnMessageReceived = msg =>
-                    {
-                        var token = msg?.Request.Headers.Authorization.ToString();
-                        string path = msg?.Request.Path ?? "";
-                        if (!string.IsNullOrEmpty(token))
-
-                        {
-                            Console.WriteLine("Access token");
-                            Console.WriteLine($"URL: {path}");
-                            Console.WriteLine($"Token: {token}\r\n");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Access token");
-                            Console.WriteLine("URL: " + path);
-                            Console.WriteLine("Token: No access token provided\r\n");
-                        }
-                        return Task.CompletedTask;
-                    }
-                }; 
-
 
             });
             builder.Services.AddAuthorization();    

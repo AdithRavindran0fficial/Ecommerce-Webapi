@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Ecommerce_Webapi.Services.UserService
@@ -19,12 +20,14 @@ namespace Ecommerce_Webapi.Services.UserService
         private AppDbContext _context;
         private IMapper _mapper;
         private IConfiguration _configuration;
+        private ILogger _logger;
         
-        public UserServices(AppDbContext context,IMapper mapper,IConfiguration configuration) 
+        public UserServices(AppDbContext context,IMapper mapper,IConfiguration configuration,ILogger<UserServices>logger) 
         {
             _context = context;
             _mapper = mapper;
             _configuration = configuration;
+            _logger=logger;
             
         }
         public async Task<IEnumerable<UserDTO>> GetAll()
@@ -34,6 +37,7 @@ namespace Ecommerce_Webapi.Services.UserService
 
                 var users = await _context.Users.ToListAsync();
                 var userdto = _mapper.Map<IEnumerable<UserDTO>>(users);
+                Console.WriteLine(userdto);
                 return userdto;
             }
             catch(Exception ex)
@@ -65,11 +69,12 @@ namespace Ecommerce_Webapi.Services.UserService
         {
             try
             {
-                var exist = await _context.Users.FirstOrDefaultAsync(user => user.UserEmail == userDTO.User_Email);
+                var exist = await _context.Users.FirstOrDefaultAsync(user => user.UserEmail == userDTO.UserEmail);
                 if (exist == null)
                 {
-                    var Hashpass = BCrypt.Net.BCrypt.EnhancedHashPassword(userDTO.User_Password, HashType.SHA256);
-                    var newuser = new Users() { UserName = userDTO.User_Name, UserEmail = userDTO.User_Email, Password = Hashpass };
+                    var salt = BCrypt.Net.BCrypt.GenerateSalt();
+                    var HashPass = BCrypt.Net.BCrypt.HashPassword(userDTO.Password, salt);
+                    var newuser = new Users() { UserName = userDTO.UserName, UserEmail = userDTO.UserEmail, Password = HashPass };
                     await _context.Users.AddAsync(newuser);
                     await _context.SaveChangesAsync();
                     return true;
@@ -92,9 +97,13 @@ namespace Ecommerce_Webapi.Services.UserService
             try
             {
                 var exist = await _context.Users.FirstOrDefaultAsync(us => us.UserEmail == login.Email);
+                //_logger.LogInformation(exist.ToString());
                 if (exist !=null)
                 {
-                    var password = BCrypt.Net.BCrypt.EnhancedVerify(login.Password, exist.Password);
+                    var password = BCrypt.Net.BCrypt.Verify(login.Password, exist.Password);
+                    _logger.LogInformation($"Hashed:{exist.Password.ToString()} plain:{login.Password},password:{password}");
+
+
                     if (password)
                     {
                         if (exist.IsStatus == false)
@@ -113,14 +122,15 @@ namespace Ecommerce_Webapi.Services.UserService
                 new Claim(ClaimTypes.Role,exist.Role)
             };
                         var token = new JwtSecurityToken(
-                claims: claim,
                 signingCredentials: credential,
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                claims: claim,
+                //issuer: _configuration["Jwt:Issuer"],
+                //audience: _configuration["Jwt:Audience"],
 
                 expires: DateTime.Now.AddDays(1));
                         return new JwtSecurityTokenHandler().WriteToken(token);
                     }
+                    return "Wrong Password";
 
                 }
                 return "Not Found";

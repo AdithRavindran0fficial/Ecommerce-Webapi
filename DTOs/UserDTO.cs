@@ -5,11 +5,11 @@ namespace Ecommerce_Webapi.DTOs
     public class UserDTO
     {
         [Required]
-        public string User_Name { get; set; }
+        public string UserName { get; set; }
         [Required]
-        public string User_Email { get; set; }
+        public string UserEmail { get; set; }
         [Required]
         [StringLength(100, MinimumLength = 8)]
-        public string User_Password { get; set; }
+        public string Password { get; set; }
     }
 }

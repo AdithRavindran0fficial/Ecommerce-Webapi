@@ -3,6 +3,7 @@ using Ecommerce_Webapi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce_Webapi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240923062417_ChangeName")]
+    partial class ChangeName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,12 +59,12 @@ namespace Ecommerce_Webapi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 9,
+                            Id = 1,
                             IsStatus = true,
-                            Password = "$2a$11$aomaGkow0/YIG8he6Ar4xuhTJisLtxHqtFrV8KcoLWmo792ljaF12",
+                            Password = "$2a$11$6OT2NVsklh.wffPeSPDRWumtwzNmV5NGxg.ITKzR9Bc0N3.q0Okwm",
                             Role = "Admin",
-                            UserEmail = "Admin.com",
-                            UserName = "Admin"
+                            UserEmail = "Adith1@gmial.com",
+                            UserName = "Adith"
                         });
                 });
 #pragma warning restore 612, 618

@@ -19,7 +19,7 @@ namespace Ecommerce_Webapi.Controllers
             _userService = userService;
             _logger = logger;
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles ="Admin")]
         [HttpGet("All")]
         public async Task<IActionResult> Get_All_User()
         {
@@ -87,6 +87,10 @@ namespace Ecommerce_Webapi.Controllers
                 {
                     return BadRequest("Please SignUp");
                 }
+                if(response== "Wrong Password")
+                {
+                    return BadRequest("Wrong Password");
+                }
                 if(response=="User Blocked")
                 {
                     return StatusCode(404, "Forbidden");
@@ -95,7 +99,7 @@ namespace Ecommerce_Webapi.Controllers
             }
             catch(Exception ex)
             {
-                return StatusCode(500, $"Internal Server Error :ex.Message");
+                return StatusCode(500, $"Internal Server Error :{ex.Message}");
             }        
         }
         [HttpPut("block/{id}")]

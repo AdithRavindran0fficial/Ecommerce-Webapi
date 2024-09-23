@@ -16,8 +16,13 @@ namespace Ecommerce_Webapi.Models.UserModel
         public string Password { get; set; }
         public bool IsStatus { get; set; } = true;
         public string Role { get; set; } = "User";
-        public virtual Cart Cart {  get; set; }
-        public ICollection<Order>Order {  get; set; }
+        public virtual Cart Cart { get; set; }
+        public ICollection<Order> Order { get; set; }
         public ICollection<WhishList> WhishList { get; set; }
+
+        public override string ToString()
+        {
+            return $"Id: {Id}, UserName: {UserName}, UserEmail: {UserEmail}, IsStatus: {IsStatus}, Role: {Role},Password:{Password}";
+        }
     }
 }
