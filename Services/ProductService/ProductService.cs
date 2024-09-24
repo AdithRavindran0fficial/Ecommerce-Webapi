@@ -11,10 +11,12 @@ namespace Ecommerce_Webapi.Services.ProductService
     {
         private AppDbContext _context;
         private IMapper _mapper;
-        public ProductService(AppDbContext context,IMapper mapper)
+        private ILogger _logger;
+        public ProductService(AppDbContext context,IMapper mapper,ILogger<ProductService>logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task<IEnumerable<ProductViewDTO>> GetAllProduct()
         {
@@ -43,6 +45,7 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
             catch (Exception ex)
             {
+                _logger.LogInformation(ex.Message);
                 throw new Exception(ex.Message);
             }
         }
@@ -62,6 +65,7 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
             catch (Exception ex)
             {
+                _logger.LogInformation(ex.Message);
                 throw new Exception(ex.Message);
             }
            
@@ -80,6 +84,7 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
             catch(Exception ex)
             {
+                _logger.LogInformation(ex.Message);
                 throw new Exception(ex.Message);
             }
         }
@@ -87,20 +92,19 @@ namespace Ecommerce_Webapi.Services.ProductService
         {
             try
             {
-                if (string.IsNullOrEmpty(name))
+               
+                var products = await _context.Products.Include(p => p.Category).Where(pr => pr.Title.ToLower().Contains(name.ToLower())).ToListAsync();
+                if (products.Count == 0)
                 {
-                    return null;
-                }
-                var products = await _context.Products.Include(p => p.Category).Where(pr => pr.Title.Contains(name)).ToListAsync();
-                if (products.Count > 0)
-                {
-                    return null;
+                    return new List<ProductViewDTO>();
                 }
                 var product_cl = _mapper.Map<IEnumerable<ProductViewDTO>>(products);
                 return product_cl;
             }
             catch (Exception ex)
             {
+                _logger.LogInformation(ex.Message);
+
                 throw new Exception(ex.Message);
             }
         }
@@ -115,6 +119,7 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
             catch(Exception ex)
             {
+                _logger.LogInformation(ex.Message);
                 throw new Exception(ex.Message);
             }
         }
@@ -138,6 +143,7 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
             catch(Exception ex)
             {
+                _logger.LogInformation(ex.Message);
                 throw new Exception(ex.Message);
             }
         }
@@ -156,6 +162,7 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
             catch (Exception ex)
             {
+                _logger.LogInformation(ex.Message);
                 throw new Exception(ex.Message);
             }
         }
