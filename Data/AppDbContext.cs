@@ -29,6 +29,10 @@ namespace Ecommerce_Webapi.Data
             modelBuilder.Entity<Users>().HasData(new Users { Id = 9, UserName = "Admin", UserEmail = "Admin.com", Password = BCrypt.Net.BCrypt.HashPassword("password",salt), Role = "Admin", IsStatus = true });
 
             modelBuilder.Entity<Products>()
+                .Property(pr => pr.Price).
+                HasPrecision(18, 2);
+
+            modelBuilder.Entity<Products>()
                 .HasOne(pr => pr.Category)
                 .WithMany(pr => pr.Products)
                 .HasForeignKey(pr => pr.CategoryId);
@@ -54,6 +58,10 @@ namespace Ecommerce_Webapi.Data
                 .HasForeignKey(or => or.UserId);
 
             modelBuilder.Entity<OrderItems>()
+                .Property (pr => pr.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<OrderItems>()
                 .HasOne(ort => ort.Order)
                 .WithMany(or => or.OrderItems)
                 .HasForeignKey(ort => ort.OrderId);
@@ -62,6 +70,7 @@ namespace Ecommerce_Webapi.Data
                 .HasOne(or => or.Products)
                 .WithMany(pr => pr.OrderItems)
                 .HasForeignKey(or => or.ProductId);
+
 
             modelBuilder.Entity<WhishList>()
                 .HasOne(wh => wh.Users)

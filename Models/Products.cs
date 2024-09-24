@@ -11,6 +11,7 @@ namespace Ecommerce_Webapi.Models
         [Required]
         public string Description { get; set; }
         [Required]
+        
         public decimal Price { get; set; }
         [Required]
         public string Img { get; set; }

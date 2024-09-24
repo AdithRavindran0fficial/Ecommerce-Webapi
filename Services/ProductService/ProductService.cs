@@ -16,30 +16,48 @@ namespace Ecommerce_Webapi.Services.ProductService
             _context = context;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<ProductDTO>> GetAllProduct()
+        public async Task<IEnumerable<ProductViewDTO>> GetAllProduct()
         {
             try
             {
-                var products = await _context.Products.ToListAsync();
-                var prod = _mapper.Map<IEnumerable<ProductDTO>>(products);
-                return prod;
+                var product =await _context.Products.Include(p=>p.Category).ToListAsync();
+                if (product.Any())
+                {
+
+                    var products = product.Select(p =>
+                    new ProductViewDTO
+                    {
+                        Id = p.Id,
+                        Title = p.Title,
+                        Description = p.Description,
+                        Img = p.Img,
+                        Category = p.Category.CategoryName,
+                        Price = p.Price
+                    }
+
+                    ).ToList();
+                    return products;
+                }
+                return new List<ProductViewDTO>();
+
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<ProductDTO> GetProductById(int id)
+        public async Task<ProductViewDTO> GetProductById(int id)
         {
             try
             {
-                var product = await _context.Products.FirstOrDefaultAsync(pro => pro.Id == id);
-                if (product == null)
+                var pr = await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(pr => pr.Id == id);
+                if(pr == null)
                 {
                     return null;
                 }
-                var prod = _mapper.Map<ProductDTO>(product);
-                return prod;
+                var product = _mapper.Map<ProductViewDTO>(pr);
+                return product;
+                
 
             }
             catch (Exception ex)
@@ -48,19 +66,100 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
            
         }
-        public async Task<IEnumerable<ProductDTO>> GetProductByCat(CategoryDTO category)
+        public async Task<IEnumerable<ProductViewDTO>> GetProductByCat(CategoryDTO category)
         {
             try
             {
-                var cat = await _context.Categories.Select(c => c.CategoryName == category.CategoryName);
-                if (cat==null)
+                var products = await _context.Products.Include(p => p.Category).Where(p => p.Category.CategoryName == category.CategoryName).ToListAsync();
+                if (products.Count > 0)
+                {
+                    var productview = _mapper.Map<IEnumerable<ProductViewDTO>>(products);
+                    return productview;
+                }
+                return new List<ProductViewDTO>();
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<IEnumerable<ProductViewDTO>>Search(string name)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(name))
                 {
                     return null;
                 }
-                var prod = await _context.
-
+                var products = await _context.Products.Include(p => p.Category).Where(pr => pr.Title.Contains(name)).ToListAsync();
+                if (products.Count > 0)
+                {
+                    return null;
+                }
+                var product_cl = _mapper.Map<IEnumerable<ProductViewDTO>>(products);
+                return product_cl;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
+        public async Task<bool> AddProduct(ProductDTO product)
+        {
+            try
+            {
+                var prod = _mapper.Map<Products>(product);
+                await _context.Products.AddAsync(prod);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<bool> UpdateProduct(int id, ProductDTO product)
+        {
+            try
+            {
+                var exist = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+                if (exist == null)
+                {
+                    return false;
+                }
+                exist.Title = product.Title;
+                exist.Description = product.Description;
+                exist.Price = product.Price;
+                exist.CategoryId = product.Category;
+                exist.Img = product.Img;
+                await _context.SaveChangesAsync();
+                return true;
+
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<bool> DeleteProduct(int id)
+        {
+            try
+            {
+                var exist = await _context.Products.FirstOrDefaultAsync(pr => pr.Id == id);
+                if (exist == null)
+                {
+                    return false;
+                }
+                _context.Products.Remove(exist);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+       
 
 
     }

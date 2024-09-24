@@ -2,18 +2,18 @@
 
 namespace Ecommerce_Webapi.DTOs.ProductDTO
 {
-    public class ProductDTO
+    public class ProductViewDTO
     {
-        [Required]
+        public int Id { get; set; }
         public string Title { get; set; }
-        [Required]
+        
         public string Description { get; set; }
-        [Required]
+        
         public string Img { get; set; }
-        [Required]
+        
         public decimal Price { get; set; }
 
-        [Required]
-        public int Category { get; set; }
+        public string  Category { get; set; }
+
     }
 }

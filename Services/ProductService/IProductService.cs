@@ -5,11 +5,12 @@ namespace Ecommerce_Webapi.Services.ProductService
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDTO>> GetAllProduct();
-        Task<ProductDTO> GetProductById(int id);
-        Task<IEnumerable<ProductDTO>> GetProductByCat(CategoryDTO category);
+        Task<IEnumerable<ProductViewDTO>> GetAllProduct();
+        Task<ProductViewDTO> GetProductById(int id);
+        Task<IEnumerable<ProductViewDTO>> GetProductByCat(CategoryDTO category);
+        Task<IEnumerable<ProductViewDTO>> Search(string name);
         Task<bool> AddProduct(ProductDTO product);
-        Task<bool> UpdateProduct(ProductDTO product);
+        Task<bool> UpdateProduct(int id,ProductDTO product);
         Task<bool> DeleteProduct(int id);
     }
 }
