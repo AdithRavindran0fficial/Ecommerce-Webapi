@@ -3,6 +3,7 @@ using Ecommerce_Webapi.Data;
 using Ecommerce_Webapi.DTOs.CategoryDTO;
 using Ecommerce_Webapi.DTOs.ProductDTO;
 using Ecommerce_Webapi.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce_Webapi.Services.ProductService
@@ -56,7 +57,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                 var pr = await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(pr => pr.Id == id);
                 if(pr == null)
                 {
-                    return null;
+                    return new ProductViewDTO();
                 }
                 var product = _mapper.Map<ProductViewDTO>(pr);
                 return product;
@@ -70,7 +71,7 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
            
         }
-        public async Task<IEnumerable<ProductViewDTO>> GetProductByCat(CategoryDTO category)
+        public async Task<IEnumerable<ProductViewDTO>> GetProductByCat([FromBody]CategoryDTO category)
         {
             try
             {
@@ -112,6 +113,13 @@ namespace Ecommerce_Webapi.Services.ProductService
         {
             try
             {
+                var categoryExists = await _context.Categories.AnyAsync(c => c.Id == product.CategoryId);
+                if (!categoryExists)
+                {
+                    _logger.LogWarning("Category with ID {CategoryId} does not exist.", product.CategoryId);
+                    return false; 
+                }
+
                 var prod = _mapper.Map<Products>(product);
                 await _context.Products.AddAsync(prod);
                 await _context.SaveChangesAsync();
@@ -135,7 +143,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                 exist.Title = product.Title;
                 exist.Description = product.Description;
                 exist.Price = product.Price;
-                exist.CategoryId = product.Category;
+                exist.CategoryId = product.CategoryId;
                 exist.Img = product.Img;
                 await _context.SaveChangesAsync();
                 return true;

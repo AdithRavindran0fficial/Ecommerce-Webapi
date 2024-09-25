@@ -37,10 +37,7 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var product = await productService.GetProductById(id);
-                if (product == null)
-                {
-                    return BadRequest("Employee not found");
-                }
+                
                 return Ok(product);
             }
             catch(Exception ex)
@@ -48,8 +45,8 @@ namespace Ecommerce_Webapi.Controllers
                 return StatusCode(500, $"Internal server issue:{ex.Message}");
             }
         }
-        [HttpGet("ProductByCategory/{category}")]
-        public async Task<IActionResult> GetBycat(CategoryDTO category)
+        [HttpPost("ProductByCategory")]
+        public async Task<IActionResult> GetBycat( CategoryDTO category)
         {
             try
             {
@@ -90,7 +87,7 @@ namespace Ecommerce_Webapi.Controllers
             }
         }
         
-        [HttpPost("UpdateProduct/{id}")]
+        [HttpPut("UpdateProduct/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, ProductDTO product)
         {

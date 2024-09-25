@@ -12,6 +12,7 @@ namespace Ecommerce_Webapi.Mapping
         {
             CreateMap<Users, UserDTO>().ReverseMap();
             CreateMap<Products, ProductDTO>().ReverseMap();
+            CreateMap<Products,ProductViewDTO>().ReverseMap();
         }
     }
 }

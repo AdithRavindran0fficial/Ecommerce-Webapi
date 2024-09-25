@@ -1,6 +1,8 @@
 
 using Ecommerce_Webapi.Data;
 using Ecommerce_Webapi.Mapping;
+using Ecommerce_Webapi.Services.CartService;
+using Ecommerce_Webapi.Services.JWTServices;
 using Ecommerce_Webapi.Services.ProductService;
 using Ecommerce_Webapi.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -25,6 +27,8 @@ namespace Ecommerce_Webapi
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
             builder.Services.AddScoped<IUserService,UserServices>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IJWTServices, JWTServices>();
+            builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddDbContext<AppDbContext>(option =>
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));

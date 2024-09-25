@@ -81,6 +81,9 @@ namespace Ecommerce_Webapi.Data
                 .HasOne(wh => wh.Products)
                 .WithMany(pr => pr.WhishList)
                 .HasForeignKey(wh => wh.ProductId);
+            modelBuilder.Entity<Category>()
+                .HasData(new Category { Id = 1, CategoryName = "Men" }, new Category { Id = 2, CategoryName = "Women" }
+                );
 
                 
         }

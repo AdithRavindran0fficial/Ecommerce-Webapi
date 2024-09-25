@@ -14,6 +14,6 @@ namespace Ecommerce_Webapi.DTOs.ProductDTO
         public decimal Price { get; set; }
 
         [Required]
-        public int Category { get; set; }
+        public int CategoryId { get; set; }
     }
 }
