@@ -12,7 +12,7 @@ namespace Ecommerce_Webapi.DTOs.OrderDTO
         [EmailAddress]
         public string UserEmail { get; set; }
         [Required]
-        public int UserPhone { get; set; }
+        public string UserPhone { get; set; }
         [Required]
         public string UserAddress { get; set; }
         [Required]

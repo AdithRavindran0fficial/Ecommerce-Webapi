@@ -3,6 +3,7 @@ using Ecommerce_Webapi.Data;
 using Ecommerce_Webapi.Mapping;
 using Ecommerce_Webapi.Services.CartService;
 using Ecommerce_Webapi.Services.JWTServices;
+using Ecommerce_Webapi.Services.OrderService;
 using Ecommerce_Webapi.Services.ProductService;
 using Ecommerce_Webapi.Services.UserService;
 using Ecommerce_Webapi.Services.WhishListService;
@@ -31,6 +32,7 @@ namespace Ecommerce_Webapi
             builder.Services.AddScoped<IJWTServices, JWTServices>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IWhishList, WhishListService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddDbContext<AppDbContext>(option =>
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));

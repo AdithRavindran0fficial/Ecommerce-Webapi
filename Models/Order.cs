@@ -10,14 +10,13 @@ namespace Ecommerce_Webapi.Models
         [Required]
         public int UserId { get; set; }
         [Required]
-        public string UserName { get; set; }
-        [Required]
-        [EmailAddress]
-        public string UserEmail { get; set; }
-        [Required]
-        public int UserPhone { get; set; }
+        
+        public string UserPhone { get; set; }
         [Required]
         public string UserAddress { get; set; }
+        [Required]
+        public decimal total { get; set; }
+
         [Required]
         public DateTime OrderDate { get; set; }
         public virtual Users Users { get; set; }

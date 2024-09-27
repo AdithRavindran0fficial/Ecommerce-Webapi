@@ -56,6 +56,9 @@ namespace Ecommerce_Webapi.Data
                 .HasOne(or => or.Users)
                 .WithMany(us => us.Order)
                 .HasForeignKey(or => or.UserId);
+            modelBuilder.Entity<Order>()
+                .Property(o => o.total).
+                HasPrecision(18, 2);
 
             modelBuilder.Entity<OrderItems>()
                 .Property (pr => pr.Price)
