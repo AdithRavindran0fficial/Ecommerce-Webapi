@@ -48,7 +48,7 @@ namespace Ecommerce_Webapi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpDelete("Remove/{id}")]
+        [HttpDelete("Remove")]
         [Authorize]
         public async Task<IActionResult>Remove(int id)
         {
