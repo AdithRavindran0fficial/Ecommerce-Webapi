@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using BCrypt.Net;
 using Ecommerce_Webapi.Data;
-using Ecommerce_Webapi.DTOs;
+using Ecommerce_Webapi.Data.UserDtOs;
+
 //using Ecommerce_Webapi.Models.DTO;
 using Ecommerce_Webapi.Models.UserModel;
 using Microsoft.EntityFrameworkCore;
@@ -30,13 +31,13 @@ namespace Ecommerce_Webapi.Services.UserService
             _logger=logger;
             
         }
-        public async Task<IEnumerable<UserDTO>> GetAll()
+        public async Task<IEnumerable<OutUsers>> GetAll()
         {
             try
             {
 
                 var users = await _context.Users.ToListAsync();
-                var userdto = _mapper.Map<IEnumerable<UserDTO>>(users);
+                var userdto = _mapper.Map<IEnumerable<OutUsers>>(users);
                 Console.WriteLine(userdto);
                 return userdto;
             }
@@ -46,7 +47,7 @@ namespace Ecommerce_Webapi.Services.UserService
             }
             
         }
-        public async Task<UserDTO> GetById(int id)
+        public async Task<OutUsers> GetById(int id)
         {
             try
             {
@@ -55,7 +56,7 @@ namespace Ecommerce_Webapi.Services.UserService
                 {
                     return null;
                 }
-                var userdto = _mapper.Map<UserDTO>(user);
+                var userdto = _mapper.Map<OutUsers>(user);
                 return userdto;
 
             }
@@ -74,7 +75,7 @@ namespace Ecommerce_Webapi.Services.UserService
                 {
                     var salt = BCrypt.Net.BCrypt.GenerateSalt();
                     var HashPass = BCrypt.Net.BCrypt.HashPassword(userDTO.Password, salt);
-                    var newuser = new Users() { UserName = userDTO.UserName, UserEmail = userDTO.UserEmail, Password = HashPass };
+                    var newuser = new Users() { UserName = userDTO.UserName, UserEmail = userDTO.UserEmail, Password = HashPass,Phone = userDTO.Phone };
                     await _context.Users.AddAsync(newuser);
                     await _context.SaveChangesAsync();
                     return true;
@@ -172,6 +173,24 @@ namespace Ecommerce_Webapi.Services.UserService
                     return false;
                 }
                 exist.IsStatus = true;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<bool>DeleteUser(int id)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(us => us.Id == id);
+                if(user == null)
+                {
+                    return false;
+                }
+                _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
                 return true;
             }

@@ -120,7 +120,7 @@ namespace Ecommerce_Webapi.Services.OrderService
                         {
                             Id = item.Id,
                             Product_Id = item.ProductId,
-                            Price = item.Price,
+                            //Price = item.Price,
                             Product_Name = item.ProductName,
                             Qty = item.Quantity,
                             Total = item.Price * item.Quantity

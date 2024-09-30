@@ -15,5 +15,7 @@ namespace Ecommerce_Webapi.DTOs.ProductDTO
 
         [Required]
         public int CategoryId { get; set; }
+        [Required]
+        public int Quantity { get; set; }
     }
 }

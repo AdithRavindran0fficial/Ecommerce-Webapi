@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ecommerce_Webapi.DTOs
+namespace Ecommerce_Webapi.Data.UserDtOs
 {
     public class UserDTO
     {
@@ -11,5 +11,6 @@ namespace Ecommerce_Webapi.DTOs
         [Required]
         [StringLength(100, MinimumLength = 8)]
         public string Password { get; set; }
+        public string ?Phone { get; set; }
     }
 }

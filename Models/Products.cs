@@ -17,6 +17,9 @@ namespace Ecommerce_Webapi.Models
         public string Img { get; set; }
         [Required]
         public int CategoryId { get; set; }
+        [Required]
+        public int Quantity { get; set; }
+        public bool status { get; set; } = true;
         public virtual Category Category { get; set; }
         public ICollection<CartItem> CartItems { get; set; }
         public ICollection<OrderItems> OrderItems { get; set; }

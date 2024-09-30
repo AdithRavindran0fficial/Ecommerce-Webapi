@@ -4,6 +4,7 @@ using Ecommerce_Webapi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce_Webapi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240929065148_Addedquantityinproduct")]
+    partial class Addedquantityinproduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,9 +197,7 @@ namespace Ecommerce_Webapi.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -245,7 +246,7 @@ namespace Ecommerce_Webapi.Migrations
                         {
                             Id = 9,
                             IsStatus = true,
-                            Password = "$2a$11$On840eqa2Y7x9P3JrYyIV.XUVgvmZ8dJX5ASS7j6S282w7rNPPhqu",
+                            Password = "$2a$11$3VWrFcUH7uF5R0AnpStVCesbqNqywAxv0xaqH.VFN1Ydjyw0Qw2Uu",
                             Role = "Admin",
                             UserEmail = "Admin.com",
                             UserName = "Admin"

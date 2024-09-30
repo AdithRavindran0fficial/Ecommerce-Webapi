@@ -1,5 +1,7 @@
 ﻿using Ecommerce_Webapi.DTOs.CategoryDTO;
 using Ecommerce_Webapi.DTOs.ProductDTO;
+using Ecommerce_Webapi.Models;
+using Ecommerce_Webapi.Responses;
 using Ecommerce_Webapi.Services.ProductService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,12 +25,14 @@ namespace Ecommerce_Webapi.Controllers
             {
 
                 var products = await  productService.GetAllProduct();
-                return Ok(products);
+                var resp = new ApiResponse<IEnumerable<ProductViewDTO>>(200, "Ok", products);
+                return Ok(resp);
 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server issue:{ex.Message}");
+                var resp  = new ApiResponse<string>(500,"Internal server error",null, ex.Message);
+                return StatusCode(500, resp);
             } 
         }
         [HttpGet("product/{id}")]
@@ -37,12 +41,13 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var product = await productService.GetProductById(id);
-                
-                return Ok(product);
+                var resp = new ApiResponse<ProductViewDTO>(200, "Ok", product);
+                return Ok(resp);
             }
             catch(Exception ex)
             {
-                return StatusCode(500, $"Internal server issue:{ex.Message}");
+                var resp = new ApiResponse<string>(500, "Internal server error", null, ex.Message);
+                return StatusCode(500, resp);
             }
         }
         [HttpPost("ProductByCategory")]
@@ -51,11 +56,13 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var product = await productService.GetProductByCat(category);
-                return Ok(product);
+                var resp = new ApiResponse<IEnumerable<ProductViewDTO>>(200, "Ok", product);
+                return Ok(resp);
             }
             catch(Exception ex)
             {
-                return StatusCode(500, $"Internal server issue:{ex.Message}");
+                var resp = new ApiResponse<string>(500, "Internal server error", null, ex.Message);
+                return StatusCode(500, resp);
             }
         }
         [HttpGet("Search/{name}")]
@@ -64,11 +71,13 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var product = await productService.Search(name);
-                return Ok(product);
+                var resp = new ApiResponse<IEnumerable<ProductViewDTO>>(200, "Ok", product);
+                return Ok(resp);
             }
             catch(Exception ex)
             {
-                return StatusCode(500, $"Internal server issue:{ex.Message}");
+                var resp = new ApiResponse<string>(500, "Internal server error", null, ex.Message);
+                return StatusCode(500, resp);
             }
         }
         
@@ -79,11 +88,12 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var res = await productService.AddProduct(product);
-                return Ok("successfully added");
+                return Ok(new ApiResponse<bool>(200, "successfully added",true,null));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server issue:{ex.Message}");
+                var resp = new ApiResponse<string>(500, "Internal server error", null, ex.Message);
+                return StatusCode(500, resp);
             }
         }
         
@@ -97,14 +107,15 @@ namespace Ecommerce_Webapi.Controllers
                 if (res)
                 {
 
-                    return Ok("Successfully updated");
+                    return Ok(new ApiResponse<bool>(200, "successfully updated", res, null));
                 }
-                return BadRequest("Product Notfound");
+                return BadRequest(new ApiResponse<string>(400, "Product Notfound"));
 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server issue:{ex.Message}");
+                var resp = new ApiResponse<string>(500, "Internal server error", null, ex.Message);
+                return StatusCode(500, resp);
             }
         }
         [HttpDelete("Delete/{id}")]
@@ -116,14 +127,15 @@ namespace Ecommerce_Webapi.Controllers
                 var res = await productService.DeleteProduct(id);
                 if (res)
                 {
-                    return Ok("Successfully deleted");
+                    return Ok(new ApiResponse<bool>(200, "Successfully deleted",res));
 
                 }
-                return BadRequest("Product not found");
+                return BadRequest(new ApiResponse<bool>(404, "Product not found",res));
             }
             catch(Exception ex)
             {
-                return StatusCode(500, $"Internal server issue:{ex.Message}");
+                var resp = new ApiResponse<string>(500, "Internal server error", null, ex.Message);
+                return StatusCode(500, resp);
             }
         }
         

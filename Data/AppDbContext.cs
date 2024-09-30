@@ -31,6 +31,9 @@ namespace Ecommerce_Webapi.Data
             modelBuilder.Entity<Products>()
                 .Property(pr => pr.Price).
                 HasPrecision(18, 2);
+            modelBuilder.Entity<Products>()
+                .Property(pr => pr.status)
+                .HasDefaultValue(true);
 
             modelBuilder.Entity<Products>()
                 .HasOne(pr => pr.Category)

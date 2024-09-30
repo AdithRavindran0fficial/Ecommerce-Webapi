@@ -23,9 +23,11 @@ namespace Ecommerce_Webapi.Services.ProductService
         {
             try
             {
-                var product =await _context.Products.Include(p=>p.Category).ToListAsync();
+                var product =await _context.Products.Include(p=>p.Category).Where(pr=>pr.status==true).ToListAsync();
                 if (product.Any())
                 {
+                    var items = _mapper.Map<IEnumerable<ProductViewDTO>>(product);
+
 
                     var products = product.Select(p =>
                     new ProductViewDTO
@@ -39,7 +41,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                     }
 
                     ).ToList();
-                    return products;
+                    return products ;
                 }
                 return new List<ProductViewDTO>();
 
@@ -55,10 +57,11 @@ namespace Ecommerce_Webapi.Services.ProductService
             try
             {
                 var pr = await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(pr => pr.Id == id);
-                if(pr == null)
+                if (pr == null || pr.status == false) 
                 {
                     return new ProductViewDTO();
                 }
+                
                 var product = _mapper.Map<ProductViewDTO>(pr);
                 return product;
                 
@@ -75,7 +78,7 @@ namespace Ecommerce_Webapi.Services.ProductService
         {
             try
             {
-                var products = await _context.Products.Include(p => p.Category).Where(p => p.Category.CategoryName == category.CategoryName).ToListAsync();
+                var products = await _context.Products.Include(p => p.Category).Where(p => p.Category.CategoryName == category.CategoryName && p.status==true).ToListAsync();
                 if (products.Count > 0)
                 {
                     var productview = _mapper.Map<IEnumerable<ProductViewDTO>>(products);
@@ -94,7 +97,7 @@ namespace Ecommerce_Webapi.Services.ProductService
             try
             {
                
-                var products = await _context.Products.Include(p => p.Category).Where(pr => pr.Title.ToLower().Contains(name.ToLower())).ToListAsync();
+                var products = await _context.Products.Include(p => p.Category).Where(pr => pr.Title.ToLower().Contains(name.ToLower()) && pr.status==true).ToListAsync();
                 if (products.Count == 0)
                 {
                     return new List<ProductViewDTO>();
@@ -145,6 +148,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                 exist.Price = product.Price;
                 exist.CategoryId = product.CategoryId;
                 exist.Img = product.Img;
+                exist.Quantity = product.Quantity;
                 await _context.SaveChangesAsync();
                 return true;
 
@@ -164,7 +168,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                 {
                     return false;
                 }
-                _context.Products.Remove(exist);
+                exist.status = false;
                 await _context.SaveChangesAsync();
                 return true;
             }

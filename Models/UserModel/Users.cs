@@ -14,6 +14,7 @@ namespace Ecommerce_Webapi.Models.UserModel
         [Required]
         [StringLength(100,MinimumLength =8)]
         public string Password { get; set; }
+        public string ? Phone {  get; set; }
         public bool IsStatus { get; set; } = true;
         public string Role { get; set; } = "User";
         public virtual Cart Cart { get; set; }
