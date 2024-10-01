@@ -11,10 +11,12 @@ namespace Ecommerce_Webapi.Services.CartService
     {
         private AppDbContext _context;
         private readonly IJWTServices jwtservice;
-        public CartService(IJWTServices jwtservice, AppDbContext context)
+        private IConfiguration _configuration;
+        public CartService(IJWTServices jwtservice, AppDbContext context,IConfiguration configuration)
         {
             this.jwtservice = jwtservice;
             this._context = context;
+            this._configuration = configuration;
         }
         public async Task<IEnumerable<OutCart>> GetAllItems(string token)
         {
@@ -36,11 +38,11 @@ namespace Ecommerce_Webapi.Services.CartService
                 }
                 var items = user.Cart.CartItems.Select(itm => new OutCart
                 {
-                    Id = itm.Id,
+                    Id = itm.ProductId,
                     Title = itm.Products.Title,
                     Description = itm.Products.Description,
-                    Img = itm.Products.Img,
-                    Price = itm.Products.Price * itm.Quantity,
+                    Img = $"{_configuration["HostUrl:images"]}/Products/{itm.Products.Img}",
+                    Price =itm.Products.Price * itm.Quantity,
                     Quantity = itm.Quantity,
                     Total = itm.Quantity * itm.Products.Price
                 }).ToList();

@@ -7,10 +7,10 @@ namespace Ecommerce_Webapi.Services.ProductService
     {
         Task<IEnumerable<ProductViewDTO>> GetAllProduct();
         Task<ProductViewDTO> GetProductById(int id);
-        Task<IEnumerable<ProductViewDTO>> GetProductByCat(CategoryDTO category);
-        Task<IEnumerable<ProductViewDTO>> Search(string name);
-        Task<bool> AddProduct(ProductDTO product);
-        Task<bool> UpdateProduct(int id,ProductDTO product);
+        IEnumerable<ProductViewDTO> GetProductByCat(CategoryDTO category);
+        IEnumerable<ProductViewDTO> Search(string name);
+        Task<bool> AddProduct(Addproduct product,IFormFile img);
+        Task<bool> UpdateProduct(int id, Addproduct product,IFormFile img);
         Task<bool> DeleteProduct(int id);
     }
 }

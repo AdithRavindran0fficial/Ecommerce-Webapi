@@ -12,12 +12,16 @@ namespace Ecommerce_Webapi.Services.ProductService
     {
         private AppDbContext _context;
         private IMapper _mapper;
-        private ILogger _logger;
-        public ProductService(AppDbContext context,IMapper mapper,ILogger<ProductService>logger)
+        private ILogger<ProductService> _logger;
+        private IWebHostEnvironment _webHostEnvironment;
+        private IConfiguration _configuration;
+        public ProductService(AppDbContext context,IMapper mapper,ILogger<ProductService>logger,IWebHostEnvironment webhostenvironment,IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _webHostEnvironment = webhostenvironment;
+            _configuration = configuration;
         }
         public async Task<IEnumerable<ProductViewDTO>> GetAllProduct()
         {
@@ -35,7 +39,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                         Id = p.Id,
                         Title = p.Title,
                         Description = p.Description,
-                        Img = p.Img,
+                        Img = $"{_configuration["HostUrl:images"]}/Products/{p.Img}" ,
                         Category = p.Category.CategoryName,
                         Price = p.Price
                     }
@@ -63,6 +67,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                 }
                 
                 var product = _mapper.Map<ProductViewDTO>(pr);
+                product.Img = $"{_configuration["HostUrl:images"]}/Products/{product.Img}";
                 return product;
                 
 
@@ -74,14 +79,24 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
            
         }
-        public async Task<IEnumerable<ProductViewDTO>> GetProductByCat([FromBody]CategoryDTO category)
+        public IEnumerable<ProductViewDTO> GetProductByCat(CategoryDTO category)
         {
             try
             {
-                var products = await _context.Products.Include(p => p.Category).Where(p => p.Category.CategoryName == category.CategoryName && p.status==true).ToListAsync();
-                if (products.Count > 0)
+                var products =  _context.Products.Include(p => p.Category).Where(p => p.Category.CategoryName == category.CategoryName && p.status==true);
+                var productcl = products.Select(pr => new ProductViewDTO
                 {
-                    var productview = _mapper.Map<IEnumerable<ProductViewDTO>>(products);
+                    Id = pr.Id,
+                    Title = pr.Title,
+                    Description = pr.Description,
+                    Img = $"{_configuration["HostUrl:images"]}/Products/{pr.Img}",
+                    Price = pr.Price,
+                    Category = pr.Category.CategoryName,
+                    Quantity = pr.Quantity
+                }).ToList();
+                if (productcl.Count > 0)
+                {
+                    var productview = _mapper.Map<IEnumerable<ProductViewDTO>>(productcl);
                     return productview;
                 }
                 return new List<ProductViewDTO>();
@@ -92,17 +107,27 @@ namespace Ecommerce_Webapi.Services.ProductService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<IEnumerable<ProductViewDTO>>Search(string name)
+        public IEnumerable<ProductViewDTO>Search(string name)
         {
             try
             {
                
-                var products = await _context.Products.Include(p => p.Category).Where(pr => pr.Title.ToLower().Contains(name.ToLower()) && pr.status==true).ToListAsync();
-                if (products.Count == 0)
+                var products =  _context.Products.Include(p => p.Category).Where(pr => pr.Title.ToLower().Contains(name.ToLower()) && pr.status==true);
+                var productcl = products.Select(pr => new ProductViewDTO
+                {
+                    Id = pr.Id,
+                    Title = pr.Title,
+                    Description = pr.Description,
+                    Img = $"{_configuration["HostUrl:images"]}/Products/{pr.Img}",
+                    Quantity = pr.Quantity,
+                    Category = pr.Category.CategoryName,
+                    Price = pr.Price
+                }).ToList();
+                if (productcl.Count == 0)
                 {
                     return new List<ProductViewDTO>();
                 }
-                var product_cl = _mapper.Map<IEnumerable<ProductViewDTO>>(products);
+                var product_cl = _mapper.Map<IEnumerable<ProductViewDTO>>(productcl);
                 return product_cl;
             }
             catch (Exception ex)
@@ -112,20 +137,40 @@ namespace Ecommerce_Webapi.Services.ProductService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> AddProduct(ProductDTO product)
+        public async Task<bool> AddProduct(Addproduct product,IFormFile img)
         {
             try
             {
+                var exist = await _context.Products.FirstOrDefaultAsync(pr => pr.Title == product.Title);
+                if(exist != null)
+                {
+                    return false;
+                }
                 var categoryExists = await _context.Categories.AnyAsync(c => c.Id == product.CategoryId);
                 if (!categoryExists)
                 {
                     _logger.LogWarning("Category with ID {CategoryId} does not exist.", product.CategoryId);
                     return false; 
                 }
-
+                
                 var prod = _mapper.Map<Products>(product);
+                if (img != null&& img.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(img.FileName);
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Images","Products", fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await img.CopyToAsync(stream);
+                    }
+                    
+                    prod.Img = fileName;
+                }
+
+               
+                
                 await _context.Products.AddAsync(prod);
-                await _context.SaveChangesAsync();
+               var changes=  await _context.SaveChangesAsync();
+                _logger.LogInformation($"{changes} ocured");
                 return true;
             }
             catch(Exception ex)
@@ -134,7 +179,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> UpdateProduct(int id, ProductDTO product)
+        public async Task<bool> UpdateProduct(int id, Addproduct product,IFormFile img)
         {
             try
             {
@@ -143,11 +188,24 @@ namespace Ecommerce_Webapi.Services.ProductService
                 {
                     return false;
                 }
+                string productimg = null;
+                if(img!=null  && img.Length > 0)
+                  {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(img.Name);
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath,"Images","Products",fileName);
+                    using(var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await img.CopyToAsync(stream);
+                        productimg = fileName; 
+                    }
+
+                }
+                
                 exist.Title = product.Title;
                 exist.Description = product.Description;
                 exist.Price = product.Price;
                 exist.CategoryId = product.CategoryId;
-                exist.Img = product.Img;
+                exist.Img = productimg;
                 exist.Quantity = product.Quantity;
                 await _context.SaveChangesAsync();
                 return true;

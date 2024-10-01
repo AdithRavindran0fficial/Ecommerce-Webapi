@@ -1,4 +1,5 @@
 ﻿using Ecommerce_Webapi.DTOs.OrderDTO;
+using Ecommerce_Webapi.Responses;
 using Ecommerce_Webapi.Services.OrderService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,11 +25,11 @@ namespace Ecommerce_Webapi.Controllers
                 var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
                 var token = auth[1];
                 var res = await orderservice.OrderPlace(token, orderDTO);
-                return Ok("order placed");
+                return Ok(new ApiResponse<string>(200, "order placed"));
             }
             catch(Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new ApiResponse<string>(500,"Internal Server Error",null,ex.Message));
             }
         }
         [HttpGet("getOrder")]
@@ -40,11 +41,11 @@ namespace Ecommerce_Webapi.Controllers
                 var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
                 var token = auth[1];
                 var details = await orderservice.GetOrderDetail(token);
-                return Ok(details);
+                return Ok(new ApiResponse<IEnumerable<OutOrders>>(200,"Success",details));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new ApiResponse<string>(500, "Internal Server Error", null, ex.Message));
             }
 
         }
@@ -55,11 +56,11 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var res = await orderservice.GetAllOrdersAdmin(id);
-                return Ok(res);
+                return Ok(new ApiResponse<IEnumerable<OutOrders>>(200, "Success", res));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new ApiResponse<string>(500, "Internal Server Error", null, ex.Message));
             }
         }
         [HttpGet("TotalRev")]
@@ -69,11 +70,11 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var res = await orderservice.TotalRevenue();
-                return Ok(res);
+                return Ok(new ApiResponse<decimal>(200, "Success", res));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new ApiResponse<string>(500, "Internal Server Error", null, ex.Message));
             }
         }
         [HttpGet("TotalSales")]
@@ -82,12 +83,12 @@ namespace Ecommerce_Webapi.Controllers
         {
             try
             {
-                var res = orderservice.TotalProductPurchased();
-                return Ok(res);
+                var res = await orderservice.TotalProductPurchased();
+                return Ok(new ApiResponse<int>(200, "Success", res));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new ApiResponse<string>(500, "Internal Server Error", null, ex.Message));
             }
         }
     }

@@ -51,11 +51,11 @@ namespace Ecommerce_Webapi.Controllers
             }
         }
         [HttpPost("ProductByCategory")]
-        public async Task<IActionResult> GetBycat( CategoryDTO category)
+        public  IActionResult GetBycat( CategoryDTO category)
         {
             try
             {
-                var product = await productService.GetProductByCat(category);
+                var product =  productService.GetProductByCat(category);
                 var resp = new ApiResponse<IEnumerable<ProductViewDTO>>(200, "Ok", product);
                 return Ok(resp);
             }
@@ -66,11 +66,11 @@ namespace Ecommerce_Webapi.Controllers
             }
         }
         [HttpGet("Search/{name}")]
-        public async Task<IActionResult>GetBySearch(string name)
+        public IActionResult GetBySearch(string name)
         {
             try
             {
-                var product = await productService.Search(name);
+                var product =  productService.Search(name);
                 var resp = new ApiResponse<IEnumerable<ProductViewDTO>>(200, "Ok", product);
                 return Ok(resp);
             }
@@ -83,12 +83,17 @@ namespace Ecommerce_Webapi.Controllers
         
         [HttpPost("AddProduct")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult>Addproduct(ProductDTO product)
+        public async Task<IActionResult>Addproduct([FromForm] Addproduct product,IFormFile img)
         {
             try
             {
-                var res = await productService.AddProduct(product);
-                return Ok(new ApiResponse<bool>(200, "successfully added",true,null));
+                var res = await productService.AddProduct(product,img);
+                if (res)
+                {
+                    return Ok(new ApiResponse<bool>(200, "successfully added", res, null));
+                }
+                return BadRequest(new ApiResponse<bool>(400, "product already exist or category not available", res));
+                
             }
             catch (Exception ex)
             {
@@ -99,11 +104,11 @@ namespace Ecommerce_Webapi.Controllers
         
         [HttpPut("UpdateProduct/{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, ProductDTO product)
+        public async Task<IActionResult> Update([FromForm]int id, Addproduct product,IFormFile img)
         {
             try
             {
-                var res = await productService.UpdateProduct(id, product);
+                var res = await productService.UpdateProduct(id, product,img);
                 if (res)
                 {
 
