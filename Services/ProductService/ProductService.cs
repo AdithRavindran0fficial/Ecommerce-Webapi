@@ -79,11 +79,27 @@ namespace Ecommerce_Webapi.Services.ProductService
             }
            
         }
-        public IEnumerable<ProductViewDTO> GetProductByCat(CategoryDTO category)
+        public IEnumerable<ProductViewDTO> GetProductByCat(string category)
         {
             try
             {
-                var products =  _context.Products.Include(p => p.Category).Where(p => p.Category.CategoryName == category.CategoryName && p.status==true);
+                if (category == "all")
+                {
+                    var prod = _context.Products.Include(p => p.Category).Where(p => p.status == true);
+                    var pr = prod.Select(p => new ProductViewDTO
+                    {
+                        Id = p.Id,
+                        Title = p.Title,
+                        Description = p.Description,
+                        Img = $"{_configuration["HostUrl:images"]}/Products/{p.Img}",
+                        Price = p.Price,
+                        Category = p.Category.CategoryName,
+                        Quantity = p.Quantity
+
+                    }).ToList();
+                    return pr;
+                }
+                var products =  _context.Products.Include(p => p.Category).Where(p => p.Category.CategoryName == category && p.status==true);
                 var productcl = products.Select(pr => new ProductViewDTO
                 {
                     Id = pr.Id,
@@ -96,8 +112,8 @@ namespace Ecommerce_Webapi.Services.ProductService
                 }).ToList();
                 if (productcl.Count > 0)
                 {
-                    var productview = _mapper.Map<IEnumerable<ProductViewDTO>>(productcl);
-                    return productview;
+                    //var productview = _mapper.Map<IEnumerable<ProductViewDTO>>(productcl);
+                    return productcl;
                 }
                 return new List<ProductViewDTO>();
             }

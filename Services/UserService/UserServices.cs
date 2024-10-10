@@ -93,7 +93,7 @@ namespace Ecommerce_Webapi.Services.UserService
            
 
         }
-        public async Task<string> Login(Login login)
+        public async Task<LoginDTO> Login(Login login)
         {
             try
             {
@@ -109,7 +109,7 @@ namespace Ecommerce_Webapi.Services.UserService
                     {
                         if (exist.IsStatus == false)
                         {
-                            return "User Blocked";
+                            return new LoginDTO { Error= "User Blocked" };
                         }
 
                         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -129,12 +129,12 @@ namespace Ecommerce_Webapi.Services.UserService
                 //audience: _configuration["Jwt:Audience"],
 
                 expires: DateTime.Now.AddDays(1));
-                        return new JwtSecurityTokenHandler().WriteToken(token);
+                        return new LoginDTO { Token= new JwtSecurityTokenHandler().WriteToken(token) , Role=exist.Role,Name=exist.UserName,Email=exist.UserEmail,Id = exist.Id} ;
                     }
-                    return "Wrong Password";
+                    return new LoginDTO { Error= "Wrong Password" };
 
                 }
-                return "Not Found";
+                return new LoginDTO { Error= "Not Found" };
                 
             }
             catch(Exception ex)

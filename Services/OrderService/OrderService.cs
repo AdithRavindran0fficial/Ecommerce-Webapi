@@ -28,7 +28,7 @@ namespace Ecommerce_Webapi.Services.OrderService
                 if (user == null || user.Cart == null || user.Cart.CartItems == null || !user.Cart.CartItems.Any())
                 {
 
-                    throw new Exception("cart is empty order cannnot be placed");
+                    return false;
 
                 }
                 decimal total = user.Cart.CartItems.Sum(cartitm => cartitm.Products.Price * cartitm.Quantity);
@@ -55,6 +55,7 @@ namespace Ecommerce_Webapi.Services.OrderService
                 {
                     _context.CartItems.Remove(item);
                 }
+                
                 await _context.SaveChangesAsync();
                 return true;
 

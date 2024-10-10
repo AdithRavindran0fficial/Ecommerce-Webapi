@@ -7,6 +7,7 @@ namespace Ecommerce_Webapi.Data.UserDtOs
         [Required]
         public string UserName { get; set; }
         [Required]
+        [EmailAddress(ErrorMessage ="Email is not valid")]
         public string UserEmail { get; set; }
         [Required]
         [StringLength(100, MinimumLength = 8)]

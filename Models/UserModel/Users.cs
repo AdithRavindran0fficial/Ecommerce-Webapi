@@ -9,7 +9,7 @@ namespace Ecommerce_Webapi.Models.UserModel
         [Required]
         public string UserName { get; set; }
         [Required]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage ="Please enter a valid email")]
         public string UserEmail { get; set; }
         [Required]
         [StringLength(100,MinimumLength =8)]

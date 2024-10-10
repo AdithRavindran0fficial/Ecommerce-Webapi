@@ -4,6 +4,7 @@ using Ecommerce_Webapi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce_Webapi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241004100336_addedemailvalidation")]
+    partial class addedemailvalidation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -245,27 +248,9 @@ namespace Ecommerce_Webapi.Migrations
                         {
                             Id = 9,
                             IsStatus = true,
-                            Password = "$2a$11$o9ZNLEu6Yqmyza86MCnOUOk.ZeNXnhD2fqctB3/CX1nw829j5qJly",
+                            Password = "$2a$11$zZAbUttQDVRrbeqWP7S33.HDZbiyiz8WojyK6riHOmT86tllpzQ82",
                             Role = "Admin",
                             UserEmail = "Admin.com",
-                            UserName = "Admin"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            IsStatus = true,
-                            Password = "$2a$11$o9ZNLEu6Yqmyza86MCnOUOk.ZeNXnhD2fqctB3/CX1nw829j5qJly",
-                            Role = "Admin",
-                            UserEmail = "Admin@.gmail.com",
-                            UserName = "Admin"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            IsStatus = true,
-                            Password = "$2a$11$o9ZNLEu6Yqmyza86MCnOUO3LdpODZX4iHheIiBAuzh37pVAtZHzue",
-                            Role = "Admin",
-                            UserEmail = "Admin@gmail.com",
                             UserName = "Admin"
                         });
                 });

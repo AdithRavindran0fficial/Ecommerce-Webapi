@@ -56,7 +56,7 @@ namespace Ecommerce_Webapi.Services.CartService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> AddToCart(string token, int productid)
+        public async Task<bool> AddToCart(string token, InCart product)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace Ecommerce_Webapi.Services.CartService
 
 
 
-                var check = user.Cart.CartItems.FirstOrDefault(ct => ct.ProductId == productid);
+                var check = user.Cart.CartItems.FirstOrDefault(ct => ct.ProductId == product.ProductId);
                 if (check != null)
                 {
                     return false;
@@ -94,7 +94,7 @@ namespace Ecommerce_Webapi.Services.CartService
                 var item = new CartItem
                 {
                     CartId = user.Cart.Id,
-                    ProductId = productid,
+                    ProductId = product.ProductId,
                     Quantity = 1
                 };
                 user.Cart.CartItems.Add(item);
@@ -135,7 +135,7 @@ namespace Ecommerce_Webapi.Services.CartService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> IncreaseQty(string token, int productid)
+        public async Task<bool> IncreaseQty(string token, InCart product)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace Ecommerce_Webapi.Services.CartService
                 {
                     throw new Exception("user not found");
                 }
-                var item = user.Cart.CartItems.FirstOrDefault(pr => pr.ProductId == productid);
+                var item = user.Cart.CartItems.FirstOrDefault(pr => pr.ProductId == product.ProductId);
                 if(item == null)
                 {
                     return false;
@@ -162,7 +162,7 @@ namespace Ecommerce_Webapi.Services.CartService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> DecreaseQty(string token, int productid)
+        public async Task<bool> DecreaseQty(string token, InCart product)
         {
             try
             {
@@ -175,7 +175,7 @@ namespace Ecommerce_Webapi.Services.CartService
                 {
                     throw new Exception("User not found");
                 }
-                var item = user.Cart.CartItems.FirstOrDefault(pr => pr.ProductId == productid);
+                var item = user.Cart.CartItems.FirstOrDefault(pr => pr.ProductId == product.ProductId);
                 if (item == null)
                 {
                     return false;

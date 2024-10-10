@@ -24,16 +24,16 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
 
-                var products = await  productService.GetAllProduct();
+                var products = await productService.GetAllProduct();
                 var resp = new ApiResponse<IEnumerable<ProductViewDTO>>(200, "Ok", products);
                 return Ok(resp);
 
             }
             catch (Exception ex)
             {
-                var resp  = new ApiResponse<string>(500,"Internal server error",null, ex.Message);
+                var resp = new ApiResponse<string>(500, "Internal server error", null, ex.Message);
                 return StatusCode(500, resp);
-            } 
+            }
         }
         [HttpGet("product/{id}")]
         public async Task<IActionResult> GetbyId(int id)
@@ -44,14 +44,14 @@ namespace Ecommerce_Webapi.Controllers
                 var resp = new ApiResponse<ProductViewDTO>(200, "Ok", product);
                 return Ok(resp);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var resp = new ApiResponse<string>(500, "Internal server error", null, ex.Message);
                 return StatusCode(500, resp);
             }
         }
-        [HttpPost("ProductByCategory")]
-        public  IActionResult GetBycat( CategoryDTO category)
+        [HttpGet("{category}")]
+        public  IActionResult GetBycat( string category)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace Ecommerce_Webapi.Controllers
         
         [HttpPut("UpdateProduct/{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update([FromForm]int id, Addproduct product,IFormFile img)
+        public async Task<IActionResult> Update(int id, [FromForm] Addproduct product,IFormFile img)
         {
             try
             {

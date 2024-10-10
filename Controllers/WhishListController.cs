@@ -1,4 +1,6 @@
-﻿using Ecommerce_Webapi.Services.WhishListService;
+﻿using Ecommerce_Webapi.DTOs.WhishListDTO;
+using Ecommerce_Webapi.Responses;
+using Ecommerce_Webapi.Services.WhishListService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,11 +26,11 @@ namespace Ecommerce_Webapi.Controllers
                 var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
                 var token = auth[1];
                 var items = await whishlist.GetItems(token);
-                return Ok(items);
+                return Ok(new ApiResponse<IEnumerable<OutWhishList>>(200,"Successfully fetched", items));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new ApiResponse<string>(500,"Internal Server Error",null,ex.Message));
             }
         }
         [HttpPost("Add")]
@@ -40,12 +42,12 @@ namespace Ecommerce_Webapi.Controllers
                 var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
                 var token = auth[1];
                 var resp = await whishlist.AddToWhishList(token, productid);
-                return Ok(resp);
+                return Ok(new ApiResponse<bool>(200,"successfully added",resp));
 
             }
             catch(Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new ApiResponse<string>(500, "Internal Server Error", null, ex.Message));
             }
         }
         [HttpDelete("Remove")]
@@ -60,13 +62,13 @@ namespace Ecommerce_Webapi.Controllers
                 var resp = await whishlist.RemoveWhishlist(token, id);
                 if (resp)
                 {
-                    return Ok("succesfully removed");
+                    return Ok(new ApiResponse<bool>(200, "successfully Removed", resp));
                 }
-                return NotFound("item not found");
+                return NotFound(new ApiResponse<bool>(200, "item not found", resp));
             }
             catch(Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new ApiResponse<string>(500, "Internal Server Error", null, ex.Message));
             }
         }
     }

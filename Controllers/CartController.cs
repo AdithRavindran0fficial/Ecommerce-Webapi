@@ -27,6 +27,10 @@ namespace Ecommerce_Webapi.Controllers
                 var jwt = token[1];
 
                 var cart = await _cartService.GetAllItems(jwt);
+                if (cart.Count()==0)
+                {
+                    return Ok(new ApiResponse<IEnumerable<OutCart>>(200, "Cart is empty", cart));
+                }
                 return Ok (new ApiResponse<IEnumerable<OutCart>>(200,"Sucessfully fetched",cart));
 
             }
@@ -38,14 +42,14 @@ namespace Ecommerce_Webapi.Controllers
         }
         [HttpPost("Addtocart")]
         [Authorize]
-        public async Task<IActionResult>Addtocart(int productid)
+        public async Task<IActionResult>Addtocart(InCart product)
         {
             try
             {
 
                 var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
                 var jwt = token[1];
-                var res = await _cartService.AddToCart(jwt, productid);
+                var res = await _cartService.AddToCart(jwt, product);
                 if (res == false)
                 {
                     return BadRequest(new ApiResponse<bool>(400,"Item already in cart",res));
@@ -79,11 +83,11 @@ namespace Ecommerce_Webapi.Controllers
         }
         [HttpPut("increaseqty")]
         [Authorize]
-        public async Task<IActionResult>Increaseqty(int productid)
+        public async Task<IActionResult>Increaseqty(InCart product)
         {
             var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
             var jwt = token[1];
-            var res = await _cartService.IncreaseQty(jwt, productid);
+            var res = await _cartService.IncreaseQty(jwt, product);
             if (res == false)
             {
                 return BadRequest(new ApiResponse<bool>(400, "Item not found in cart", res));
@@ -92,11 +96,11 @@ namespace Ecommerce_Webapi.Controllers
         }
         [HttpPut("decreaseqty")]
         [Authorize]
-        public async Task<IActionResult> Decreaseqty(int productid)
+        public async Task<IActionResult> Decreaseqty(InCart product)
         {
             var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
             var jwt = token[1];
-            var res = await _cartService.DecreaseQty(jwt, productid);
+            var res = await _cartService.DecreaseQty(jwt, product);
             if (res == false)
             {
                 return BadRequest(new ApiResponse<bool>(400, "Item not found in cart", res));

@@ -25,7 +25,11 @@ namespace Ecommerce_Webapi.Controllers
                 var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
                 var token = auth[1];
                 var res = await orderservice.OrderPlace(token, orderDTO);
-                return Ok(new ApiResponse<string>(200, "order placed"));
+                if (!res)
+                {
+                    return Ok(new ApiResponse<bool>(200, "Cart is empty", res));
+                }
+                return Ok(new ApiResponse<bool>(200, "order placed",res));
             }
             catch(Exception ex)
             {

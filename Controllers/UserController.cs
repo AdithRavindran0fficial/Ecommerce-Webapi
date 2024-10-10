@@ -31,7 +31,7 @@ namespace Ecommerce_Webapi.Controllers
                 var response = new ApiResponse<IEnumerable<OutUsers>> (200, "User fetched Successfully", users);
                 if (User == null)
                 {
-                    return NotFound(new ApiResponse<IEnumerable<OutUsers>>(404, "No user found", null));
+                    return Ok(new ApiResponse<IEnumerable<OutUsers>>(200, "No user found", null));
 
                 }
                 return Ok(response);
@@ -71,10 +71,10 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var val = await _userService.Register_User(userDTO);
-                var response = new ApiResponse<bool>(200, "Sucessfully registered");
+                var response = new ApiResponse<bool>(200, "Sucessfully registered",val);
                 if (val==false)
                 {
-                    return BadRequest(new ApiResponse<bool>(400, "Email already Exist"));
+                    return BadRequest(new ApiResponse<bool>(400, "Email already Exist",val));
                 }
                 return Ok(response);
             }
@@ -90,19 +90,19 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
                 var response = await _userService.Login(login);
-                if (response== "Not Found")
+                if (response.Error== "Not Found")
                 {
-                    return NotFound(new ApiResponse<string>(404,"Please SignUp, user not found"));
+                    return NotFound(new ApiResponse<string>(404, "NotFound", null, "Please SignUp, user not found"));
                 }
-                if(response== "Wrong Password")
+                if(response.Error== "Wrong Password")
                 {
-                    return BadRequest(new ApiResponse<string>(400, "Wrong Password"));
+                    return BadRequest(new ApiResponse<string>(400,"BadRequest", null, response.Error));
                 }
-                if(response=="User Blocked")
+                if(response.Error =="User Blocked")
                 {
-                    return StatusCode(404,new ApiResponse<string>(404,"User is blocked by admin"));
+                    return StatusCode(403,new ApiResponse<string>(403,"Forbiden",null, "User is blocked by admin"));
                 }
-                return Ok(new ApiResponse<string>(200, "Login successfully", response));
+                return Ok(new ApiResponse<LoginDTO>(200, "Login successfully", response));
                 
             }
             catch(Exception ex)

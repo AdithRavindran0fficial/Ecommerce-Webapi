@@ -13,13 +13,16 @@ namespace Ecommerce_Webapi.Services.WhishListService
         private AppDbContext _context;
         private IMapper _mapper;
         private ILogger<WhishListService> _logger;
-        public WhishListService(IJWTServices jwt,AppDbContext context,IMapper mapper,ILogger<WhishListService>logger) 
+        private IConfiguration _configuration;
+        public WhishListService(IJWTServices jwt,AppDbContext context,IMapper mapper,ILogger<WhishListService>logger,IConfiguration configuration) 
         {
             _jwt = jwt;
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _configuration = configuration;
         }
+
         public async Task<bool> AddToWhishList(string token, int productid)
         {
             try
@@ -76,7 +79,7 @@ namespace Ecommerce_Webapi.Services.WhishListService
                         ProductId = itm.ProductId,
                         Title = itm.Products.Title,
                         Description = itm.Products.Description,
-                        Img = itm.Products.Img,
+                        Img = $"{_configuration["HostUrl:images"]}/Products/{itm.Products.Img}",
                         price = itm.Products.Price,
                         category = itm.Products.Category.CategoryName,
 

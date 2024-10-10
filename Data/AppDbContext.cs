@@ -27,6 +27,8 @@ namespace Ecommerce_Webapi.Data
         {
             var salt = BCrypt.Net.BCrypt.GenerateSalt();
             modelBuilder.Entity<Users>().HasData(new Users { Id = 9, UserName = "Admin", UserEmail = "Admin.com", Password = BCrypt.Net.BCrypt.HashPassword("password",salt), Role = "Admin", IsStatus = true });
+            modelBuilder.Entity<Users>().HasData(new Users { Id = 16, UserName = "Admin", UserEmail = "Admin@.gmail.com", Password = BCrypt.Net.BCrypt.HashPassword("password", salt), Role = "Admin", IsStatus = true });
+            modelBuilder.Entity<Users>().HasData(new Users { Id = 18, UserName = "Admin", UserEmail = "Admin@gmail.com", Password = BCrypt.Net.BCrypt.HashPassword("Password12@", salt), Role = "Admin", IsStatus = true });
 
             modelBuilder.Entity<Products>()
                 .Property(pr => pr.Price).

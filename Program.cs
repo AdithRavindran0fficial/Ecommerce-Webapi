@@ -88,7 +88,16 @@ namespace Ecommerce_Webapi
                 };
 
             });
-            builder.Services.AddAuthorization();    
+            builder.Services.AddAuthorization();
+            builder.Services.AddCors(Options =>
+            {
+                Options.AddPolicy("ReactPolicy", builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
+                });
+            });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -102,6 +111,7 @@ namespace Ecommerce_Webapi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors("ReactPolicy");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();  // Enables serving static files like images
