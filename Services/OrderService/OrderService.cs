@@ -4,6 +4,7 @@ using Ecommerce_Webapi.Models;
 using Ecommerce_Webapi.Services.JWTServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Razorpay.Api;
 
 namespace Ecommerce_Webapi.Services.OrderService
 {
@@ -11,11 +12,68 @@ namespace Ecommerce_Webapi.Services.OrderService
     {
         private IJWTServices JWTServices;
         private AppDbContext _context;
-        public OrderService(IJWTServices jwt, AppDbContext context)
+        private IConfiguration _configuration;
+        public OrderService(IJWTServices jwt, AppDbContext context,IConfiguration configuration)
         {
             JWTServices = jwt;
             _context = context;
+            _configuration = configuration;
         }
+
+        public async Task<string> OrderCreate(long price)
+        {
+            Dictionary<string, object> input = new Dictionary<string, object>();
+            Random random = new Random();
+            string TrasactionId = random.Next(0, 1000).ToString();
+            input.Add("amount", Convert.ToDecimal(price) * 100);
+            input.Add("currency", "INR");
+            input.Add("receipt", TrasactionId);
+
+            string key = _configuration["Razorpay:KeyId"];
+            string secret = _configuration["Razorpay:KeySecret"];
+
+            RazorpayClient client = new RazorpayClient(key, secret);
+
+            Razorpay.Api.Order order = client.Order.Create(input);
+            var OrderId = order["id"].ToString();
+
+            return OrderId;
+        }
+        public bool Payment(PaymentDto razorpay)
+        {
+            if (razorpay == null ||
+                string.IsNullOrEmpty(razorpay.razorpay_payment_id) ||
+                string.IsNullOrEmpty(razorpay.razorpay_order_id) ||
+                string.IsNullOrEmpty(razorpay.razorpay_signature))
+            {
+                return false;
+            }
+
+            try
+            {
+                RazorpayClient client = new RazorpayClient(
+                    _configuration["Razorpay:KeyId"],
+                    _configuration["Razorpay:KeySecret"]
+                );
+
+                Dictionary<string, string> attributes = new Dictionary<string, string>
+        {
+            { "razorpay_payment_id", razorpay.razorpay_payment_id },
+            { "razorpay_order_id", razorpay.razorpay_order_id },
+            { "razorpay_signature", razorpay.razorpay_signature }
+        };
+
+                Utils.verifyPaymentSignature(attributes);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                
+                throw new Exception("Payment verification failed: " + ex.Message);
+            }
+        }
+
+
         public async Task<bool> OrderPlace(string token, OrderDTO orderDTO)
         {
             try
@@ -32,7 +90,7 @@ namespace Ecommerce_Webapi.Services.OrderService
 
                 }
                 decimal total = user.Cart.CartItems.Sum(cartitm => cartitm.Products.Price * cartitm.Quantity);
-                Order order = new Order
+                Ecommerce_Webapi.Models.Order order = new Ecommerce_Webapi.Models.Order
                 {
                     UserId = userid,
                     UserAddress = orderDTO.UserAddress,
@@ -84,7 +142,8 @@ namespace Ecommerce_Webapi.Services.OrderService
                     Product_Id = item.ProductId,
                     Product_Name = item.ProductName,
                     Qty = item.Quantity,
-                    Total = item.Price
+                    Total = item.Price,
+
 
 
                 }).ToList();

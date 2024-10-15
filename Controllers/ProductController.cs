@@ -1,4 +1,5 @@
-﻿using Ecommerce_Webapi.DTOs.CategoryDTO;
+﻿using Ecommerce_Webapi.Data;
+using Ecommerce_Webapi.DTOs.CategoryDTO;
 using Ecommerce_Webapi.DTOs.ProductDTO;
 using Ecommerce_Webapi.Models;
 using Ecommerce_Webapi.Responses;
@@ -14,9 +15,11 @@ namespace Ecommerce_Webapi.Controllers
     public class ProductController : ControllerBase
     {
         private IProductService productService;
-        public ProductController(IProductService products)
+        private AppDbContext _context;
+        public ProductController(IProductService products,AppDbContext context)
         {
             this.productService = products;
+            _context = context;
         }
         [HttpGet("All")]
         public async Task<IActionResult> GetAll()
@@ -108,6 +111,11 @@ namespace Ecommerce_Webapi.Controllers
         {
             try
             {
+                var cat = _context.Categories.FirstOrDefault(c => c.Id == product.CategoryId);
+                if (cat == null)
+                {
+                    return BadRequest($"Category not found{product.CategoryId}");
+                }
                 var res = await productService.UpdateProduct(id, product,img);
                 if (res)
                 {

@@ -195,7 +195,7 @@ namespace Ecommerce_Webapi.Services.ProductService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> UpdateProduct(int id, Addproduct product,IFormFile img)
+        public async Task<bool> UpdateProduct(int id, Addproduct product, IFormFile img)
         {
             try
             {
@@ -204,35 +204,54 @@ namespace Ecommerce_Webapi.Services.ProductService
                 {
                     return false;
                 }
+                int categoryId;
+                if (!int.TryParse(product.CategoryId.ToString(), out categoryId))
+                {
+                    _logger.LogError($"{categoryId} ; this is the cateeee");
+                    throw new Exception("Invalid CategoryId format");
+                }
+
                 string productimg = null;
-                if(img!=null  && img.Length > 0)
-                  {
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(img.Name);
-                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath,"Images","Products",fileName);
-                    using(var stream = new FileStream(filePath, FileMode.Create))
+
+                if (img != null && img.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(img.FileName);
+                    var directoryPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Products");
+
+                    // Ensure the directory exists
+                    if (!Directory.Exists(directoryPath))
                     {
-                        await img.CopyToAsync(stream);
-                        productimg = fileName; 
+                        Directory.CreateDirectory(directoryPath);
                     }
 
+                    var filePath = Path.Combine(directoryPath, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await img.CopyToAsync(stream);
+                        productimg = fileName;
+                    }
                 }
-                
+
                 exist.Title = product.Title;
                 exist.Description = product.Description;
                 exist.Price = product.Price;
-                exist.CategoryId = product.CategoryId;
+                exist.CategoryId = categoryId;
                 exist.Img = productimg;
                 exist.Quantity = product.Quantity;
+
+                // Mark the entity as modified
+                _context.Entry(exist).State = EntityState.Modified;
+
                 await _context.SaveChangesAsync();
                 return true;
-
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogInformation(ex.Message);
-                throw new Exception(ex.Message);
+                _logger.LogError($"An error occurred while updating the product: {ex.Message} - Inner Exception: {ex.InnerException?.Message}");
+                throw; // or handle it as appropriate
             }
         }
+
         public async Task<bool> DeleteProduct(int id)
         {
             try

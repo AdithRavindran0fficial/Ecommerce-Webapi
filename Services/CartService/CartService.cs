@@ -42,7 +42,7 @@ namespace Ecommerce_Webapi.Services.CartService
                     Title = itm.Products.Title,
                     Description = itm.Products.Description,
                     Img = $"{_configuration["HostUrl:images"]}/Products/{itm.Products.Img}",
-                    Price =itm.Products.Price * itm.Quantity,
+                    Price =itm.Products.Price,
                     Quantity = itm.Quantity,
                     Total = itm.Quantity * itm.Products.Price
                 }).ToList();

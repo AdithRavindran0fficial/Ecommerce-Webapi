@@ -42,6 +42,10 @@ namespace Ecommerce_Webapi.Controllers
                 var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
                 var token = auth[1];
                 var resp = await whishlist.AddToWhishList(token, productid);
+                if (resp == false)
+                {
+                    return BadRequest(new ApiResponse<string>(400, "Already added", null));
+                }
                 return Ok(new ApiResponse<bool>(200,"successfully added",resp));
 
             }

@@ -9,7 +9,7 @@
         public string Product_Name { get; set; }
         public decimal Total { get; set; }
         //public int User_Id { get; set; }
-        //public string Img { get; set; }
+        //public string UserName { get; set; }
 
 
     }

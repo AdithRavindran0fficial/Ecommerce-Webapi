@@ -16,6 +16,46 @@ namespace Ecommerce_Webapi.Controllers
         {
             this.orderservice = orderservice;
         }
+        [HttpPost("order-create")]
+        [Authorize]
+        public async Task<ActionResult> createOrder(long price)
+        {
+            try
+            {
+                if (price <= 0)
+                {
+                    return BadRequest(new ApiResponse<string>(400, "enter a valid money "));
+                }
+                var orderId = await orderservice.OrderCreate(price);
+                return Ok(new ApiResponse<string>(400, "success",orderId));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+
+        }
+        [HttpPost("payment")]
+        [Authorize]
+        public ActionResult Payment(PaymentDto razorpay)
+        {
+            try
+            {
+                if (razorpay == null)
+                {
+                    return BadRequest("razorpay details must not null here");
+                }
+                var con = orderservice.Payment(razorpay);
+                return Ok(con);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult>OrderPlace(OrderDTO orderDTO)
@@ -27,7 +67,7 @@ namespace Ecommerce_Webapi.Controllers
                 var res = await orderservice.OrderPlace(token, orderDTO);
                 if (!res)
                 {
-                    return Ok(new ApiResponse<bool>(200, "Cart is empty", res));
+                    return BadRequest(new ApiResponse<bool>(200, "Cart is empty", res));
                 }
                 return Ok(new ApiResponse<bool>(200, "order placed",res));
             }
@@ -62,7 +102,7 @@ namespace Ecommerce_Webapi.Controllers
                 var res = await orderservice.GetAllOrdersAdmin(id);
                 return Ok(new ApiResponse<IEnumerable<OutOrders>>(200, "Success", res));
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
                 return StatusCode(500, new ApiResponse<string>(500, "Internal Server Error", null, ex.Message));
             }

@@ -48,9 +48,8 @@ namespace Ecommerce_Webapi.Services.WhishListService
                     return true;
 
                 }
-                _context.WhishList.Remove(product);
-                await _context.SaveChangesAsync();
-                return true;
+                
+                return false;
             }
             catch(Exception ex)
             {
