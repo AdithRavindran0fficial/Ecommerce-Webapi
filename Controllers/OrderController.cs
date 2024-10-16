@@ -47,11 +47,11 @@ namespace Ecommerce_Webapi.Controllers
                     return BadRequest("razorpay details must not null here");
                 }
                 var con = orderservice.Payment(razorpay);
-                return Ok(con);
+                return Ok(new ApiResponse<bool>(200,"OK",con));
             }
             catch (Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500,new ApiResponse<string>(500,"Internal Server Issue",null,e.Message));
             }
 
         }
