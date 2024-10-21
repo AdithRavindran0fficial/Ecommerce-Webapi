@@ -4,11 +4,11 @@ namespace Ecommerce_Webapi.Services.CartService
 {
     public interface ICartService
     {
-        Task<IEnumerable<OutCart>> GetAllItems(string token);
-        Task<bool> AddToCart(string token,InCart product);
-        Task<bool> RemoveCart(string token, int productid);
-        Task<bool> IncreaseQty(string token, InCart product);
-        Task<bool> DecreaseQty(string token, InCart product);
+        Task<IEnumerable<OutCart>> GetAllItems(int token);
+        Task<bool> AddToCart(int token,InCart product);
+        Task<bool> RemoveCart(int token, int productid);
+        Task<bool> IncreaseQty(int token, InCart product);
+        Task<bool> DecreaseQty(int token, InCart product);
 
     }
 }

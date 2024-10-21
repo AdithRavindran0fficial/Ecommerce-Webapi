@@ -74,15 +74,15 @@ namespace Ecommerce_Webapi.Services.OrderService
         }
 
 
-        public async Task<bool> OrderPlace(string token, OrderDTO orderDTO)
+        public async Task<bool> OrderPlace(int id, OrderDTO orderDTO)
         {
             try
             {
-                var userid = JWTServices.GetUserId(token);
+                //var userid = JWTServices.GetUserId(token);
                 var user = await _context.Users.Include(ct => ct.Cart)
                     .ThenInclude(cti => cti.CartItems)
                     .ThenInclude(pr => pr.Products)
-                    .FirstOrDefaultAsync(us => us.Id == userid);
+                    .FirstOrDefaultAsync(us => us.Id == id);
                 if (user == null || user.Cart == null || user.Cart.CartItems == null || !user.Cart.CartItems.Any())
                 {
 
@@ -92,7 +92,7 @@ namespace Ecommerce_Webapi.Services.OrderService
                 decimal total = user.Cart.CartItems.Sum(cartitm => cartitm.Products.Price * cartitm.Quantity);
                 Ecommerce_Webapi.Models.Order order = new Ecommerce_Webapi.Models.Order
                 {
-                    UserId = userid,
+                    UserId = id,
                     UserAddress = orderDTO.UserAddress,
                     UserPhone = orderDTO.UserPhone,
                     OrderDate = DateTime.Now,
@@ -125,12 +125,12 @@ namespace Ecommerce_Webapi.Services.OrderService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<IEnumerable<OutOrders>> GetOrderDetail(string token)
+        public async Task<IEnumerable<OutOrders>> GetOrderDetail(int id)
         {
             try
             {
-                var userid = JWTServices.GetUserId(token);
-                var user = await _context.Orders.Include(or => or.OrderItems).ThenInclude(pr=>pr.Products).FirstOrDefaultAsync(user => user.UserId == userid);
+                //var userid = JWTServices.GetUserId(token);
+                var user = await _context.Orders.Include(or => or.OrderItems).ThenInclude(pr=>pr.Products).FirstOrDefaultAsync(user => user.UserId == id);
                 if (user == null || !user.OrderItems.Any())
                 {
                     return new List<OutOrders>();

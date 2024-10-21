@@ -18,16 +18,16 @@ namespace Ecommerce_Webapi.Services.CartService
             this._context = context;
             this._configuration = configuration;
         }
-        public async Task<IEnumerable<OutCart>> GetAllItems(string token)
+        public async Task<IEnumerable<OutCart>> GetAllItems(int id)
         {
             try
             {
-                var userid = jwtservice.GetUserId(token);
+                
                 
                 var user = await _context.Users.Include(u => u.Cart)
                     .ThenInclude(cart => cart.CartItems)
                     .ThenInclude(cati => cati.Products)
-                    .FirstOrDefaultAsync(us => us.Id == userid);
+                    .FirstOrDefaultAsync(us => us.Id == id);
                 if (user == null)
                 {
                     throw new Exception("User not found");
@@ -56,15 +56,15 @@ namespace Ecommerce_Webapi.Services.CartService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> AddToCart(string token, InCart product)
+        public async Task<bool> AddToCart(int id, InCart product)
         {
             try
             {
-                var userid = jwtservice.GetUserId(token);
+                
                 var user = await _context.Users.Include(c => c.Cart).
                     ThenInclude(ct => ct.CartItems).
                     ThenInclude(pr => pr.Products).
-                    FirstOrDefaultAsync(us => us.Id == userid);
+                    FirstOrDefaultAsync(us => us.Id == id);
                 if (user == null)
                 {
                     throw new Exception("User not found");
@@ -75,7 +75,7 @@ namespace Ecommerce_Webapi.Services.CartService
 
                 if (user.Cart == null)
                 {
-                    user.Cart = new Cart { UserId=userid,CartItems=new List<CartItem>() };
+                    user.Cart = new Cart { UserId=id,CartItems=new List<CartItem>() };
                     _context.Carts.Add(user.Cart);
                     await _context.SaveChangesAsync();
                 }
@@ -107,15 +107,15 @@ namespace Ecommerce_Webapi.Services.CartService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> RemoveCart(string token, int productid)
+        public async Task<bool> RemoveCart(int id, int productid)
         {
             try
             {
-                var userid = jwtservice.GetUserId(token);
+                
                 var user = await _context.Users.Include(ct => ct.Cart)
                             .ThenInclude(cti => cti.CartItems).
                             ThenInclude(pr => pr.Products).
-                            FirstOrDefaultAsync(us => us.Id == userid);
+                            FirstOrDefaultAsync(us => us.Id == id);
                 if (user == null)
                 {
                     throw new Exception("user not found");
@@ -135,15 +135,15 @@ namespace Ecommerce_Webapi.Services.CartService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> IncreaseQty(string token, InCart product)
+        public async Task<bool> IncreaseQty(int id, InCart product)
         {
             try
             {
-                var userid = jwtservice.GetUserId(token);
+                
                 var user = await _context.Users.Include(ct => ct.Cart)
                             .ThenInclude(cti => cti.CartItems).
                             ThenInclude(pr => pr.Products).
-                            FirstOrDefaultAsync(us => us.Id == userid);
+                            FirstOrDefaultAsync(us => us.Id == id);
                 if (user == null)
                 {
                     throw new Exception("user not found");
@@ -162,15 +162,15 @@ namespace Ecommerce_Webapi.Services.CartService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> DecreaseQty(string token, InCart product)
+        public async Task<bool> DecreaseQty(int id, InCart product)
         {
             try
             {
-                var userid = jwtservice.GetUserId(token);
+                
                 var user = await _context.Users.Include(ct => ct.Cart)
                             .ThenInclude(cti => cti.CartItems).
                             ThenInclude(pr => pr.Products).
-                            FirstOrDefaultAsync(us => us.Id == userid);
+                            FirstOrDefaultAsync(us => us.Id == id);
                 if (user == null)
                 {
                     throw new Exception("User not found");

@@ -23,13 +23,13 @@ namespace Ecommerce_Webapi.Services.WhishListService
             _configuration = configuration;
         }
 
-        public async Task<bool> AddToWhishList(string token, int productid)
+        public async Task<bool> AddToWhishList(int Userid, int productid)
         {
             try
             {
-                var userid = _jwt.GetUserId(token);
+                
                 var user = await _context.Users.Include(wh => wh.WhishList)
-                            .ThenInclude(pr => pr.Products).FirstOrDefaultAsync(us => us.Id == userid);
+                            .ThenInclude(pr => pr.Products).FirstOrDefaultAsync(us => us.Id == Useri);
                 if (user == null)
                 {
                     throw new Exception("User not found");
@@ -40,7 +40,7 @@ namespace Ecommerce_Webapi.Services.WhishListService
                     AddWhishListDTO item = new AddWhishListDTO
                     {
                         ProductId = productid,
-                        UserId = userid
+                        UserId = Userid
                     };
                     var map = _mapper.Map<WhishList>(item);
                     _context.WhishList.Add(map);
@@ -57,14 +57,14 @@ namespace Ecommerce_Webapi.Services.WhishListService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<IEnumerable< OutWhishList>> GetItems(string token)
+        public async Task<IEnumerable< OutWhishList>> GetItems(int Id)
         {
             try
             {
-                var userid = _jwt.GetUserId(token);
+                //var userid = _jwt.GetUserId(token);
                 var user = await _context.Users.Include(wh => wh.WhishList)
                     .ThenInclude(pr => pr.Products).ThenInclude(ct=>ct.Category)
-                    .FirstOrDefaultAsync(us => us.Id == userid);
+                    .FirstOrDefaultAsync(us => us.Id == Id);
                 if(user == null)
                 {
                     throw new Exception("User not found");
@@ -92,13 +92,13 @@ namespace Ecommerce_Webapi.Services.WhishListService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> RemoveWhishlist(string token, int productid)
+        public async Task<bool> RemoveWhishlist(int id, int productid)
         {
             try
             {
-                var userid = _jwt.GetUserId(token);
+                //var userid = _jwt.GetUserId(token);
                 var user = await _context.Users.Include(wh=>wh.WhishList)
-                    .ThenInclude(pr=>pr.Products).FirstOrDefaultAsync(us=>us.Id==userid);
+                    .ThenInclude(pr=>pr.Products).FirstOrDefaultAsync(us=>us.Id==id);
                 if (user == null)
                 {
                     throw new Exception("user not found");

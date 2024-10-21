@@ -62,9 +62,8 @@ namespace Ecommerce_Webapi.Controllers
         {
             try
             {
-                var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
-                var token = auth[1];
-                var res = await orderservice.OrderPlace(token, orderDTO);
+                int id = Convert.ToInt32(HttpContext.Items["UserId"]);
+                var res = await orderservice.OrderPlace(id, orderDTO);
                 if (!res)
                 {
                     return BadRequest(new ApiResponse<bool>(200, "Cart is empty", res));
@@ -82,9 +81,8 @@ namespace Ecommerce_Webapi.Controllers
         {
             try
             {
-                var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
-                var token = auth[1];
-                var details = await orderservice.GetOrderDetail(token);
+                int id = Convert.ToInt32(HttpContext.Items["UserId"]);
+                var details = await orderservice.GetOrderDetail(id);
                 return Ok(new ApiResponse<IEnumerable<OutOrders>>(200,"Success",details));
             }
             catch (Exception ex)

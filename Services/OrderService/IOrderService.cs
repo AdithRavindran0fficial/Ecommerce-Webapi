@@ -6,8 +6,8 @@ namespace Ecommerce_Webapi.Services.OrderService
     {
         Task<string> OrderCreate(long price);
         bool Payment(PaymentDto razorpay);
-        Task<bool> OrderPlace(string token, OrderDTO orderDTO);
-        Task<IEnumerable<OutOrders>> GetOrderDetail(string token);
+        Task<bool> OrderPlace(int id, OrderDTO orderDTO);
+        Task<IEnumerable<OutOrders>> GetOrderDetail(int id);
         Task<List<OutOrders>> GetAllOrdersAdmin(int id);
         Task<decimal> TotalRevenue();
         Task<int> TotalProductPurchased();

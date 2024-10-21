@@ -23,9 +23,8 @@ namespace Ecommerce_Webapi.Controllers
         {
             try
             {
-                var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
-                var token = auth[1];
-                var items = await whishlist.GetItems(token);
+                int id = Convert.ToInt32(HttpContext.Items["UserId"]);
+                var items = await whishlist.GetItems(id);
                 return Ok(new ApiResponse<IEnumerable<OutWhishList>>(200,"Successfully fetched", items));
             }
             catch (Exception ex)
@@ -39,9 +38,8 @@ namespace Ecommerce_Webapi.Controllers
         {
             try
             {
-                var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
-                var token = auth[1];
-                var resp = await whishlist.AddToWhishList(token, productid);
+                int id = Convert.ToInt32(HttpContext.Items["UserId"]);
+                var resp = await whishlist.AddToWhishList(id, productid);
                 if (resp == false)
                 {
                     return BadRequest(new ApiResponse<string>(400, "Already added", null));
@@ -61,9 +59,8 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
 
-                var auth = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split();
-                var token = auth[1];
-                var resp = await whishlist.RemoveWhishlist(token, id);
+                int id = Convert.ToInt32(HttpContext.Items["UserId"]);
+                var resp = await whishlist.RemoveWhishlist(id, id);
                 if (resp)
                 {
                     return Ok(new ApiResponse<bool>(200, "successfully Removed", resp));

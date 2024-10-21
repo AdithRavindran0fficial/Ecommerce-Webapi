@@ -1,6 +1,7 @@
 
 using Ecommerce_Webapi.Data;
 using Ecommerce_Webapi.Mapping;
+using Ecommerce_Webapi.MiddleWare;
 using Ecommerce_Webapi.Services.CartService;
 using Ecommerce_Webapi.Services.JWTServices;
 using Ecommerce_Webapi.Services.OrderService;
@@ -120,6 +121,7 @@ namespace Ecommerce_Webapi
             app.UseAuthentication();
             app.UseAuthorization();
             //app.UseAuthentication();
+            app.UseMiddleware<TokenUserIdMiddleWare>();
 
 
             app.MapControllers();
