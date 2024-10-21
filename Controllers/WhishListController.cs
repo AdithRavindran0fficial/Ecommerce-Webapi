@@ -59,8 +59,8 @@ namespace Ecommerce_Webapi.Controllers
             try
             {
 
-                int id = Convert.ToInt32(HttpContext.Items["UserId"]);
-                var resp = await whishlist.RemoveWhishlist(id, id);
+                int Userid = Convert.ToInt32(HttpContext.Items["UserId"]);
+                var resp = await whishlist.RemoveWhishlist(Userid, id);
                 if (resp)
                 {
                     return Ok(new ApiResponse<bool>(200, "successfully Removed", resp));

@@ -29,7 +29,7 @@ namespace Ecommerce_Webapi.Services.WhishListService
             {
                 
                 var user = await _context.Users.Include(wh => wh.WhishList)
-                            .ThenInclude(pr => pr.Products).FirstOrDefaultAsync(us => us.Id == Useri);
+                            .ThenInclude(pr => pr.Products).FirstOrDefaultAsync(us => us.Id == Userid);
                 if (user == null)
                 {
                     throw new Exception("User not found");
