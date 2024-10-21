@@ -1,4 +1,5 @@
-﻿using Ecommerce_Webapi.Data;
+﻿using Ecommerce_Webapi.ActionFilters;
+using Ecommerce_Webapi.Data;
 using Ecommerce_Webapi.DTOs.CategoryDTO;
 using Ecommerce_Webapi.DTOs.ProductDTO;
 using Ecommerce_Webapi.Models;
@@ -7,11 +8,13 @@ using Ecommerce_Webapi.Services.ProductService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 
 namespace Ecommerce_Webapi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class ProductController : ControllerBase
     {
         private IProductService productService;
@@ -22,6 +25,8 @@ namespace Ecommerce_Webapi.Controllers
             _context = context;
         }
         [HttpGet("All")]
+        [TimeCalculation]
+        
         public async Task<IActionResult> GetAll()
         {
             try
